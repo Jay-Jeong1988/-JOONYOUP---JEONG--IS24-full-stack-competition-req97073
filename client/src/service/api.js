@@ -1,33 +1,33 @@
 import http from "./http";
 
-class Users {
+class Products {
   getAll() {
-    return http.get("/users");
+    return http.get("/product/all");
   }
 
-  get(id) {
-    return http.get(`/users/${id}`);
+  get(productId) {
+    return http.get(`/product/${productId}`);
   }
 
   create(data) {
-    return http.post("/users", data);
+    return http.post("/product", data);
   }
 
-  update(id, data) {
-    return http.put(`/users/${id}`, data);
+  update(productId, data) {
+    return http.put(`/product/${productId}`, data);
   }
 
-  delete(id) {
-    return http.delete(`/users/${id}`);
+  delete(productId) {
+    return http.delete(`/product/${productId}`);
   }
 
   deleteAll() {
-    return http.delete(`/users`);
+    return http.delete(`/product`);
   }
 
-  findByName(name) {
-    return http.get(`/users?title=${name}`);
+  findByName(productName) {
+    return http.get(`/product?title=${productName}`);
   }
 }
 
-export default new Users();
+export default new Products();

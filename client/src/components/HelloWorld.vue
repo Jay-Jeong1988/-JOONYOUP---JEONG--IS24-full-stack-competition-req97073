@@ -1,16 +1,30 @@
 <template>
   <div class="">
-    
+    <p v-for="product in products"></p>
   </div>
 </template>
 
 <script>
+import api from '../service/api';
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  name: "Lan",
+  data() {
+    return {
+      products: []
+    };
+  },
+  methods: {
+    retrieveTutorials() {
+      api.getAll()
+        .then(response => {
+          this.products = response.data;
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
