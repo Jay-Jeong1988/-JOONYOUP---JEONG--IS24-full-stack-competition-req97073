@@ -1,23 +1,28 @@
-var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var createError = require('http-errors');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 var app = express();
-var cors = require('cors')
 var productsRouter = require('./routes/products');
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// allow cors for development only
+var corsOptions = {
+  origin: 'http://localhost:8080',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions));
 
-app.use(cors());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('/favicon.ico', (req, res) => res.status(204));
+
+// serve static files of client build
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // use customized routers
 app.use('/api/product', productsRouter);
