@@ -16,8 +16,25 @@ export default {
     ProductsTable
   },
   methods: {
+    handleHashChange() {
+      if (!window.location.hash) {
+        this.$store.state.productModalShow = false;
+      } else if(window.location.hash == this.$store.state.openProductModalHashId) {
+        this.$store.state.productModalShow = true;
+      } 
+      setTimeout(() => {
+        this.$bvModal.show(this.$store.state.targetModalId);
+      }, 100);
+    }
   },
-  created(){
+  mounted(){
+    this.handleHashChange();
+    window.onhashchange = () => {
+      this.handleHashChange();
+    };
+    this.$root.$on("bv::modal::hide", () => {
+      window.history.back();
+    });
   }
 };
 </script>

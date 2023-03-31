@@ -11,8 +11,8 @@
       </thead>
       <tbody>
           <!-- Loop through the list get the each product data -->
-          <tr v-for="item in items" :key="item">
-          <td v-for="(dataKey, index) in dataKeys" :key="index">{{item[dataKey]}}</td>
+        <tr v-for="(item, index) in items" :key="index">
+          <td v-for="(dataKey, index) in dataKeys" :key="index">{{printData(item[dataKey])}}</td>
         </tr>
       </tbody>
     </table>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import "bootstrap/dist/css/bootstrap.min.css";
 export default {
   name: "Table",
   data() {
@@ -28,8 +27,13 @@ export default {
       dataKeys: []
     };
   },
+  computed: {
+  },
   props: ['fields','items'],
   methods: {
+    printData(inputData){
+      return inputData.toString().replaceAll(',', ', ');
+    },
     switchFieldsWithDataKeys(){
       for (let field of this.fields){
         switch(field) {
@@ -68,5 +72,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
+  .tableContainer{
+    width: 80%;
+    margin: auto;
+  }
 </style>

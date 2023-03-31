@@ -1,12 +1,32 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-    </div>
     <router-view/>
   </div>
 </template>
-
+<script>
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
+export default {
+  name: "App",
+  components: { },
+  data() {
+    return {
+    };
+  },
+  computed: {
+  },
+  methods: {
+  },
+  mounted() {
+    this.$store.state.isMobile = window.innerWidth <= 924
+    window.addEventListener("resize", ()=>{
+      this.$store.state.isMobile = window.innerWidth <= 924
+    })
+  }
+};
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

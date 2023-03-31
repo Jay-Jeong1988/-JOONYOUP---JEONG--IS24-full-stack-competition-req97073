@@ -10,7 +10,7 @@ class Products {
   }
 
   create(data) {
-    return http.post("/product", data);
+    return http.post("/product/create", data);
   }
 
   update(productId, data) {
