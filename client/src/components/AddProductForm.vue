@@ -1,17 +1,17 @@
 <template>
   <div class="addProductForm">
     <div class="createCardForm">
-      <h1 style="margin-bottom: 1em;">Direct Message</h1>
-      <div class="errors" v-if="responseErrors.length > 0">
-        <small v-for="(e, i) in responseErrors" :key="i" style="color: red;">
-          {{ e.split(":")[1].includes("Cast to Date") ? (i+1)+ "." + "Please make sure if date is correct." : (i+1)+ "." + e.split(":")[1] }}
+      <h1 style="margin-bottom: 1em;">Add product</h1>
+      <div class="errors" v-if="isInputError">
+        <small style="color: red;">
+          {{ "Please make sure if all informations are filled in" }}
           <br />
 
         </small>
       </div>
       <div>
         <label>Product Name</label>
-        <input class="form-control" v-model="newProductData.productName" type="text" />
+        <input class="form-control" v-model="newProductData.productName" type="text"/>
       </div>
       <div>
         <label>Scrum Master Name</label>
@@ -24,18 +24,20 @@
       <div>
         <label>Developer Name</label>
         <div
-          v-for="(developer, index) in newProductData.developers"
-          :key="`developer-${index}`"
-          class="input wrapper flex items-center"
+          v-for="n in developerCount"
+          :key="`developer-${n}`"
+          class="input wrapper flex items-center developerFormContainer"
         >
-          <input class="form-control developerForm" :id="`developer-${index}`" type="text" placeholder="Enter developer's name" />
-          <button v-show="newProductData.developers.length > 1" class="btn btn-outline-danger" @click="removeDeveloperForm()">Remove -</button>
+          <input class="form-control developerForm" :id="`developer-${n}`" type="text" placeholder="Enter developer's name" />
         </div>
-        <button class="btn btn-outline-secondary" @click="addDeveloperForm()">Add developer +</button>
+        <div class="addRemoveBtnsContainer">
+          <button v-show="developerCount > 1" class="btn btn-outline-danger" @click="removeDeveloperForm()">Remove -</button>
+          <button v-show="developerCount < 5" class="btn btn-outline-secondary" @click="addDeveloperForm()">Add developer +</button>
+        </div>
       </div>
       <div>
         <label>Start Date</label>
-        <b-form-datepicker id="datepicker" v-model="newProductData.startDate" class="mb-2"></b-form-datepicker>
+        <b-form-datepicker id="datepicker" :max="maxDate" v-model="newProductData.startDate" class="mb-2"></b-form-datepicker>
       </div>
       <div>
         <label>Methodology</label>
@@ -49,7 +51,7 @@
           </ul>
         </div>
       </div>
-      <button class="btn btn-block btn-lg btn-success done" @click="createProduct">Complete</button>
+      <button class="btn btn-block btn-lg btn-success done" @click="createProduct">Save</button>
     </div>
     <b-modal
       centered
@@ -79,40 +81,86 @@ export default {
         productName: "",
         scrumMasterName: "",
         productOwnerName: "",
-        developers: [""],
-        startDate: null,
+        developers: [],
+        startDate: "",
         methodology: ""
       },
-      responseErrors: [],
+      isInputError: false,
       succeeded: false,
+      developerCount: 1
     };
   },
   computed: {
+    maxDate(){
+      const now = new Date()
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      const maxDate = new Date(today)
+      return maxDate
+    }
   },
   methods: {
+    checkConstraints(){
+      for (const value of Object.values(this.newProductData)){
+        if (typeof value === 'string' || value instanceof String) {
+          if (!value) return false
+        }else if(Array.isArray(value)){
+          if (value.length <= 0) return false
+        }
+      }
+      return true;
+    },
     addDeveloperForm(){
-      this.newProductData.developers.push();
+      if(this.developerCount < 5) this.developerCount+=1;
     },
     removeDeveloperForm() {
-      this.newProductData.developers.pop();
+      if(this.developerCount > 1) this.developerCount-=1;
     },
     closeAddProductModal() {
       this.$bvModal.hide("successModal")
     },
     createProduct(){
-      api.create(this.newProductData).then(response => {
-        // this.products.push(response);
-        console.log(response)
-      })
-      .catch(e => {
-        console.log(e);
-      })
+      const developersEl = document.getElementsByClassName("developerForm");
+      for (let element of developersEl) {
+        if(element.value) this.newProductData.developers.push(element.value)
+        else window.alert("There has to be at least one developer name") 
+        element.value = ""
+      }
+      
+      if (this.checkConstraints()){
+        this.isInputError = false
+        api.create(this.newProductData).then(response => {
+          this.$emit("recallProducts", response.data)
+          console.log(response)
+          this.newProductData = {
+            productName: "",
+            scrumMasterName: "",
+            productOwnerName: "",
+            developers: [],
+            startDate: null,
+            methodology: ""
+          }
+          this.developerCount = 1
+          this.$bvModal.hide('addProductModal')
+        })
+        .catch(e => {
+          console.log(e);
+        })
+      }else this.isInputError = true
     },
   },
   mounted() {
+    if (this.selectedProductId){
+      api.get(this.selectedProductId).then(response => {
+        this.newProductData = response.data
+        let developerEl = document.getElementById("developer"+"-1")
+        developerEl.value = this.newProductData.developers[0]
+      })
+      
+    }
   },
+  created(){},
   components: { },
-  props: []
+  props: [ "products", "selectedProductId" ]
 };
 </script>
 
@@ -138,6 +186,12 @@ export default {
 
 .successIcon 
   width: 17em
+
+.developerFormContainer
+  margin-top: 1em
+
+.addRemoveBtnsContainer
+  margin-top: 1em;
 
 @media only screen and (max-width: 600px) 
   .successIcon 

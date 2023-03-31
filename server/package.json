@@ -16,6 +16,8 @@
   "devDependencies": {
     "cors": "^2.8.5",
     "nodemon": "^1.18.10",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.13"
   }
 }

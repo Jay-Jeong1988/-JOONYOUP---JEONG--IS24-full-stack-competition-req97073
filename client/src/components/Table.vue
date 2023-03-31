@@ -10,9 +10,10 @@
         </tr>
       </thead>
       <tbody>
-          <!-- Loop through the list get the each product data -->
-        <tr v-for="(item, index) in items" :key="index">
+        <!-- Loop through the list get the each product data -->
+        <tr :id="item.productId" v-for="(item, index) in items" :key="index">
           <td v-for="(dataKey, index) in dataKeys" :key="index">{{printData(item[dataKey])}}</td>
+          <span v-if="editMode" @click="selectProduct(item.productId)">Edit</span>
         </tr>
       </tbody>
     </table>
@@ -24,13 +25,17 @@ export default {
   name: "Table",
   data() {
     return {
-      dataKeys: []
+      dataKeys: [],
     };
   },
   computed: {
   },
-  props: ['fields','items'],
+  props: ['fields','items','editMode', 'openProductModal'],
   methods: {
+    selectProduct(productId){
+      this.openProductModal()
+      this.$emit('selectedProductId', productId)
+    },
     printData(inputData){
       return inputData.toString().replaceAll(',', ', ');
     },

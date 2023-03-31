@@ -17,14 +17,6 @@ class Products {
     return http.put(`/product/${productId}`, data);
   }
 
-  delete(productId) {
-    return http.delete(`/product/${productId}`);
-  }
-
-  deleteAll() {
-    return http.delete(`/product`);
-  }
-
   findByName(productName) {
     return http.get(`/product?title=${productName}`);
   }

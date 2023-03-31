@@ -2,6 +2,7 @@
   <div class="productsTable">
     <p>Products: {{ productCount }}</p>
     <button type="button" class="btn btn-outline-secondary" @click="openProductModal">Add Product</button>
+    <button type="button" class="btn btn-outline-secondary" @click="toggleEditMode">Edit Product</button>
     <b-modal
       v-if="$store.state.productModalShow"
       centered
@@ -17,9 +18,9 @@
           <img src="../assets/images/cancel-black.svg" alt="close icon" style="width:2em"/>
         </b-button>
       </template>
-      <AddProductForm/>
+      <AddProductForm :selectedProductId="selectedProductId" :products="products" @recallProducts="updateProducts"/>
     </b-modal>
-    <Table :fields="productFields" :items="products"/>
+    <Table @selectedProductId="selectProduct" :openProductModal="openProductModal" :editMode="editMode" :fields="productFields" :items="products"/>
   </div>
 </template>
 
@@ -40,7 +41,9 @@ export default {
         'Developer Names',
         'Start Date',
         'Methodology'
-      ]
+      ],
+      editMode: false,
+      selectedProductId: ""
     };
   },
   computed: {
@@ -52,6 +55,15 @@ export default {
     Table, AddProductForm
   },
   methods: {
+    selectProduct(selectedProductId){
+      this.selectedProductId = selectedProductId
+    },
+    toggleEditMode(){
+      this.editMode = !this.editMode
+    },
+    updateProducts(newProducts){
+      this.products = newProducts
+    },
     openProductModal() {
       this.$store.state.targetModalId = "addProductModal"
       window.location.hash += this.$store.state.openProductModalHashId
